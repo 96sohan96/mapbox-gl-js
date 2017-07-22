@@ -29,13 +29,14 @@ class GlyphSource {
     /**
      * @param {string} url glyph template url
      */
-    constructor(url, localIdeographFontFamily) {
+    constructor(url, localIdeographFontFamily, transformRequestCallback) {
         this.url = url && normalizeURL(url);
         this.atlases = {};
         this.stacks = {};
         this.loading = {};
         this.localIdeographFontFamily = localIdeographFontFamily;
         this.tinySDFs = {};
+        this.transformRequestCallback = transformRequestCallback;
     }
 
     getSimpleGlyphs(fontstack, glyphIDs, uid, callback) {
@@ -141,7 +142,8 @@ class GlyphSource {
     }
 
     loadPBF(url, callback) {
-        ajax.getArrayBuffer(url, callback);
+        const request  = this.transformRequestCallback ? this.transformRequestCallback(url) : { url: url };
+        ajax.getArrayBuffer(request, callback);
     }
 
     loadRange(fontstack, range, callback) {
